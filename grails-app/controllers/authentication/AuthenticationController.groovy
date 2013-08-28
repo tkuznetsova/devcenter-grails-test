@@ -45,38 +45,32 @@ class AuthenticationController {
 
 	def login = { LoginForm form ->
 	    def urls = extractParams()
-		
+		def dummyEvent = new DummyEventHandler()
 		if (!form.hasErrors()) {
 			def loginResult = authenticationService.login( form.login, form.password)
-			// suppress redirect(LinkedHashMap) errors on "No such user and" and "Password is incorrect" 
-			def userInstance = AuthenticationUser.findByLogin(form.login)
-			if(!userInstance) {
-				flash.message = message(code: 'default.not.registered.message')
-				redirect(controller: "main", action: "index")
-			} else {
-				if(userInstance.password != authenticationService.encodePassword(form.password)) {
-					flash.message = message(code: 'default.bad.password.message')
-					redirect(action: "login_form")
-				} else {
 			
-					if (loginResult.result == 0) {
-						flash.loginForm = form
-						if (log.debugEnabled) log.debug("Login succeeded for [${form.login}]")
-						
-						if(params.login) {
-							user = AuthenticationUser.findByLogin(params.login)
-							if(user){
-								session.user = user
-								println "${session.user.login}"
-							}
+			// TODO: DONE suppress redirect(LinkedHashMap) errors on "No such user and" and "Password is incorrect" 
+			params.loginID = form.login
+			params.password = form.password
+			if(dummyEvent.onSignup(params)) { }	
+			else {
+				if (loginResult.result == 0) {
+					flash.loginForm = form
+					if (log.debugEnabled) log.debug("Login succeeded for [${form.login}]")
+					
+					if(params.login) {
+						user = AuthenticationUser.findByLogin(params.login)
+						if(user){
+							session.user = user
+							println "${session.user.login}"
 						}
-						redirect(flash.authSuccessURL ? flash.authSuccessURL : urls.success)
-					} else {                  
-						flash.loginForm = form
-						flash.authenticationFailure = loginResult
-						if (log.debugEnabled) log.debug("Login failed for [${form.login}] - reason: ${loginResult.result}")
-						redirect(flash.authFailureURL ? flash.authFailureURL : urls.error)
 					}
+					redirect(flash.authSuccessURL ? flash.authSuccessURL : urls.success)
+				} else {                  
+					flash.loginForm = form
+					flash.authenticationFailure = loginResult
+					if (log.debugEnabled) log.debug("Login failed for [${form.login}] - reason: ${loginResult.result}")
+					redirect(flash.authFailureURL ? flash.authFailureURL : urls.error)
 				}
 			}
 		} else {
@@ -118,6 +112,17 @@ class AuthenticationController {
 					user = AuthenticationUser.findByLogin(params.login)
 					if(user){
 						session.user = user
+						def basketInstance = new BasketController().create(session.user.id)
+						println " AuthenticationController-signup says ${basketInstance.id}"
+						def basketInstance_ = new BasketController().findBasket(basketInstance.id)
+						if(basketInstance_) {
+							user.basketId = basketInstance_.id
+							
+							println " AuthenticationController-signup says_ ${basketInstance_.id}"
+						}else {
+							println "${session.user.login} AuthenticationController-signup says basketInstance uncreated"
+						}
+						//redirect(controller:"basket", action:"create", params: [userLogin: "${session.user.login}", success_url: "${urls.success}"])
 					}
 				}
 				redirect(flash.authSuccessURL ? flash.authSuccessURL : urls.success)

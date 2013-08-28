@@ -1,5 +1,6 @@
 package eshop
 
+import authentication.AuthenticationController
 import org.springframework.dao.DataIntegrityViolationException
 
 class BasketController {
@@ -10,19 +11,27 @@ class BasketController {
         redirect(action: "list", params: params)
     }
 
-	def create = {
-		// create domain object
-		def b = new Basket(basketCost:'0', itemCount:'0', id:'${session.user.id}')
-		b.user = session.user
-		session.basket = b
-		b.save()
-		if(b.save()) {
-			println "Basket $b created!"
-		} else {
-			println "Basket $b not created!"
+	def create(id) {
+		def basketInstance = new Basket(params)
+		params.basketCost=0.0
+		params.itemCount=0
+		basketInstance.properties = params
+		basketInstance.version = 1	
+		
+		def userInstance = new AuthenticationController().findUser(id)
+		basketInstance.user = userInstance
+		println "${session.user.login} AuthenticationController-signup says user not found"
+		if(basketInstance.save()) {
+		
+		}else {
+			println "${session.user.login} AuthenticationController-signup-Basket-create says basketInstance unsaved"
 		}
-
-		redirect(controller:'main')
+		return basketInstance
+	}
+	
+	def findBasket(id) {
+		def basketInstance = new Basket().find {id}
+		return basketInstance 
 	}
 	
 	def save() {

@@ -66,7 +66,8 @@ grails.project.dependency.resolution = {
     }
 	
 	coverage {
-		nopost = true
+		enabledByDefault = true
+		nopost = false
 		xml = true
 	}
 }

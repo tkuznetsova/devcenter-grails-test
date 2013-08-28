@@ -94,4 +94,4 @@ log4j = {
 // "grails test-app -coverage" // to generate the coverage reports.
 coverage { enabledByDefault = true}
 
-//the _Events.groovy script in the plugin
+//the _Events.groovy script in the plugin target/test-reports/cobertura/coverage.xml

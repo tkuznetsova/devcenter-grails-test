@@ -6,7 +6,7 @@
 #.project
 eclipse
 stacktrace.log
-target
+target/classes
 target-eclipse
 /plugins
 /web-app/plugins

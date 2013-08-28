@@ -9,4 +9,7 @@ codeCoverageExclusionList = [
 	"**/grails/test/**",
 	"**/org/codehaus/groovy/grails/**",
 	"**/PreInit*",
-	"*GrailsPlugin*"]
+	"*GrailsPlugin*",
+	"**/frame*",
+	"grails/**",
+	"**/org/grails/**"]
