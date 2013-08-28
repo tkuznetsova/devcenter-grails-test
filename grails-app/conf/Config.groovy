@@ -89,3 +89,11 @@ log4j = {
            'org.hibernate',
            'net.sf.ehcache.hibernate'
 }
+
+// TODO:
+// "grails test-app -coverage" // to generate the coverage reports.
+coverage { enabledByDefault = true}
+
+//'**/BuildConfig*'
+//the _Events.groovy script in the plugin:
+//

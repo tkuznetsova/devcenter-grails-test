@@ -63,4 +63,9 @@ grails.project.dependency.resolution = {
 
         compile ':cache:1.0.1'
     }
+	
+	coverage {
+		nopost = true
+		xml = true
+	}
 }
